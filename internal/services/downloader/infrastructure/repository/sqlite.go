@@ -1,8 +1,24 @@
 package downloader_repository
 
-type downloaderRepo struct {
+import "github.com/jmoiron/sqlx"
+
+const thumbnailsCacheTable = "thumbnails_cache"
+
+type Config struct {
+	Host     string
+	Port     string
+	Username string
+	Password string
+	DBName   string
+	SSLMode  string
 }
 
-func (uc *downloaderRepo) DownloadThumbnail() {
+func NewSqliteDB(cfg Config) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("sqlite3", "__test.db")
 
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

@@ -11,3 +11,7 @@ func NewDownloadClientGRPC(c downloader_proto.DownloaderServiceClient) *Download
 		downloadClient: c,
 	}
 }
+
+func (c *DownloadClientGRPC) DownloadThumbnail() {
+
+}

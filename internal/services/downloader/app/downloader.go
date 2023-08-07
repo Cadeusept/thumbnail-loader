@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	// TODO
 	var repo *downloader.DownloadRepoI
 

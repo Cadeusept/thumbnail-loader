@@ -4,8 +4,10 @@ import (
 	"context"
 	"net"
 
+	"github.com/cadeusept/thumbnail-loader/internal/models"
 	"github.com/cadeusept/thumbnail-loader/internal/services/downloader"
 	downloader_proto "github.com/cadeusept/thumbnail-loader/internal/services/downloader/proto"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
@@ -36,5 +38,17 @@ func (s DownloadServerGRPC) Start(url string) error {
 
 func (s DownloadServerGRPC) DownloadThumbnail(ctx context.Context, req *downloader_proto.DownloadTRequest) (*downloader_proto.DownloadTResponse, error) {
 	// unpack request & download thumbnail
-	return nil, nil
+	t := models.NewThumbnail()
+
+	t.Link = req.GetLink()
+
+	picture, err := s.downloadUC.DownloadThumbnail(t)
+	if err != nil {
+		logrus.Fatalf("error downloading thumbnail: %s", err)
+		return nil, err
+	}
+
+	return &downloader_proto.DownloadTResponse{
+		Picture: picture,
+	}, nil
 }
