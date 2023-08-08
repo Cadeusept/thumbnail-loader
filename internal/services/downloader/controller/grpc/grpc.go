@@ -4,7 +4,6 @@ import (
 	"context"
 	"net"
 
-	"github.com/cadeusept/thumbnail-loader/internal/models"
 	"github.com/cadeusept/thumbnail-loader/internal/services/downloader"
 	downloader_proto "github.com/cadeusept/thumbnail-loader/internal/services/downloader/proto"
 	"github.com/sirupsen/logrus"
@@ -38,11 +37,9 @@ func (s DownloadServerGRPC) Start(url string) error {
 
 func (s DownloadServerGRPC) DownloadThumbnail(ctx context.Context, req *downloader_proto.DownloadTRequest) (*downloader_proto.DownloadTResponse, error) {
 	// unpack request & download thumbnail
-	t := models.NewThumbnail()
+	url := req.GetLink()
 
-	t.Link = req.GetLink()
-
-	picture, err := s.downloadUC.DownloadThumbnail(t)
+	picture, err := s.downloadUC.DownloadThumbnail(url)
 	if err != nil {
 		logrus.Fatalf("error downloading thumbnail: %s", err)
 		return nil, err

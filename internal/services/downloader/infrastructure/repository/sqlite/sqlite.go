@@ -1,4 +1,4 @@
-package downloader_repository
+package sqlite
 
 import "github.com/jmoiron/sqlx"
 

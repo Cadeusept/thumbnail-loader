@@ -2,14 +2,13 @@ package downloader
 
 import (
 	"github.com/cadeusept/thumbnail-loader/internal/models"
-	downloader_repository "github.com/cadeusept/thumbnail-loader/internal/services/downloader/infrastructure/repository"
 )
 
 type DownloadUseCaseI interface {
-	DownloadThumbnail(t *models.Thumbnail) (string, error)
+	DownloadThumbnail(url string) (string, error)
 }
 
 type DownloadRepoI interface {
-	CacheThumbnail(t downloader_repository.Thumbnail) (int, error)
+	CacheThumbnail(t models.Thumbnail) (int, error)
 	GetThumbnail(t *models.Thumbnail) (string, error)
 }

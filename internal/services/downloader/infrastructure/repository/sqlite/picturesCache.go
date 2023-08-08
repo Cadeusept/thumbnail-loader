@@ -1,15 +1,15 @@
-package downloader_repository
+package sqlite
 
 import (
 	"fmt"
 
+	"github.com/cadeusept/thumbnail-loader/internal/models"
 	"github.com/jmoiron/sqlx"
 )
 
-type Thumbnail struct {
-	Id      int    `db:"id"`
-	UrlHash string `binding:"required"`
-	Picture string `binding:"required"`
+type PicturesCache interface {
+	Create(t models.Thumbnail) (int, error)
+	GetPicture(urlHash string) (string, error)
 }
 
 type ThumbnailCacheSqlite struct {
@@ -22,7 +22,7 @@ func NewThumbnailCacheSqlite(db *sqlx.DB) *ThumbnailCacheSqlite {
 	}
 }
 
-func (r *ThumbnailCacheSqlite) Create(t Thumbnail) (int, error) {
+func (r *ThumbnailCacheSqlite) Create(t models.Thumbnail) (int, error) {
 	var id int
 	query := fmt.Sprintf("INSERT INTO %s (url_hash, picture) values ($1, $2) RETURNING id", thumbnailsCacheTable)
 	row := r.db.QueryRow(query, t.UrlHash, t.Picture)

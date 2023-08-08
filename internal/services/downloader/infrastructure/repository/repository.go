@@ -1,28 +1,25 @@
 package downloader_repository
 
 import (
+	"github.com/cadeusept/thumbnail-loader/internal/models"
+	"github.com/cadeusept/thumbnail-loader/internal/services/downloader/infrastructure/repository/sqlite"
 	"github.com/jmoiron/sqlx"
 )
 
-type picturesCache interface {
-	Create(t Thumbnail) (int, error)
-	GetPicture(urlHash string) (string, error)
-}
-
 type DownloaderRepo struct {
-	picturesCache
+	sqlite.PicturesCache
 }
 
 func NewDownloaderRepo(db *sqlx.DB) *DownloaderRepo {
 	return &DownloaderRepo{
-		picturesCache: NewThumbnailCacheSqlite(db),
+		PicturesCache: sqlite.NewThumbnailCacheSqlite(db),
 	}
 }
 
 func (r *DownloaderRepo) GetThumbnail(urlHash string) (string, error) {
-	return r.picturesCache.GetPicture(urlHash)
+	return r.PicturesCache.GetPicture(urlHash)
 }
 
-func (r *DownloaderRepo) CacheThumbnail(t Thumbnail) (int, error) {
-	return r.picturesCache.Create(t)
+func (r *DownloaderRepo) CacheThumbnail(t models.Thumbnail) (int, error) {
+	return r.PicturesCache.Create(t)
 }

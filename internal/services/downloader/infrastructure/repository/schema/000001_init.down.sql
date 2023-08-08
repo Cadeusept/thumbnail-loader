@@ -1,0 +1,1 @@
+DROP TABLE thumbnails_cache;

@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"github.com/cadeusept/thumbnail-loader/internal/models"
 	"github.com/cadeusept/thumbnail-loader/internal/services/downloader"
 	"github.com/cadeusept/thumbnail-loader/internal/services/downloader/entity"
 	"github.com/sirupsen/logrus"
@@ -17,10 +16,10 @@ func NewDownloadUseCase(r *downloader.DownloadRepoI) *downloadUseCase {
 	}
 }
 
-func (uc *downloadUseCase) DownloadThumbnail(t *models.Thumbnail) (string, error) {
+func (uc *downloadUseCase) DownloadThumbnail(url string) (string, error) {
 	// TODO: check cache
 
-	picture, err := entity.DownloadThumbnail(t)
+	picture, err := entity.DownloadThumbnail(url)
 	if err != nil {
 		logrus.Fatalf("error downloading thumbnail: %s", err)
 		return "", err
