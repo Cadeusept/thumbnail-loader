@@ -5,16 +5,11 @@ import "github.com/jmoiron/sqlx"
 const thumbnailsCacheTable = "thumbnails_cache"
 
 type Config struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
-	DBName   string
-	SSLMode  string
+	DBName string
 }
 
 func NewSqliteDB(cfg Config) (*sqlx.DB, error) {
-	db, err := sqlx.Connect("sqlite3", "__test.db")
+	db, err := sqlx.Connect("sqlite3", cfg.DBName)
 
 	if err != nil {
 		return nil, err

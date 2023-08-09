@@ -2,8 +2,8 @@ package entity
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -11,9 +11,29 @@ import (
 
 const invalidSymbols string = "?&/<%="
 
+type Thumbnail struct {
+	VideoID        string
+	IdHash         string
+	Link           string
+	FileName       []string
+	ThumbnailsDir  string
+	ThumbnailsName string
+}
+
+func NewThumbnail() *Thumbnail {
+	return &Thumbnail{
+		VideoID:        "",
+		IdHash:         "",
+		Link:           "",
+		FileName:       []string{},
+		ThumbnailsDir:  "./thumbnails",
+		ThumbnailsName: "",
+	}
+}
+
 // findVideoID получает из ссылки id видеоролика и возвращает его
 // также проверяет длину id и содержание в id невалидных символов
-func findVideoID(url string) (string, error) {
+func FindVideoID(url string) (string, error) {
 	equalIndex := strings.Index(url, "=")
 	ampIndex := strings.Index(url, "&")
 	slash := strings.LastIndex(url, "/")
@@ -72,40 +92,34 @@ func getURLResponse(videoId string) (*http.Response, error) {
 	return resp, nil
 }
 
-func DownloadThumbnail(url string) (string, error) {
-	// thumbnailsDir := "../downloadedThumbnails"
-
-	videoId, err := findVideoID(url)
-	if err != nil {
-		logrus.Fatalf("error finding video: %s", err.Error())
-	}
-	/*
-		err = createFolder("../downloadedThumbnails")
-		if err != nil {
-			logrus.Fatalf("error finding video: %s", err.Error())
-		}
-
-		// Walk walks thumbnails dir and save file names
-		err = filepath.Walk(thumbnailsDir, t.walkFunc)
-		if err != nil {
-			logrus.Fatalf("error finding video: %s", err.Error())
-		}
-
-		readyFile, errCreate := createFile(setThumbnailName())
-		if err != nil {
-			logrus.Fatalf("error finding video: %s", err.Error())
-		}
-
-		errWrite := writeFile(readyFile, getURLResponse(videoId))
-		if err != nil {
-			logrus.Fatalf("error finding video: %s", err.Error())
-		}
-	*/
-	picture, err := getURLResponse(videoId)
+func DownloadThumbnail(t *Thumbnail, url string) (string, error) {
+	picture, err := getURLResponse(t.VideoID)
 	if err != nil {
 		logrus.Fatalf("error finding video: %s", err.Error())
 		return "", err
 	}
 
-	return fmt.Sprint(picture.Body), nil
+	err = createFolder("../downloadedThumbnails")
+	if err != nil {
+		logrus.Fatalf("error finding video: %s", err.Error())
+	}
+
+	// перебирает директорию thumbnails и сохраняет имена файлов
+	err = filepath.Walk(t.ThumbnailsDir, t.walkFunc)
+	if err != nil {
+		logrus.Fatalf("error finding video: %s", err.Error())
+	}
+
+	fileName := t.setThumbnailName()
+	readyFile, errCreate := createFile(fileName)
+	if errCreate != nil {
+		logrus.Fatalf("error finding video: %s", err.Error())
+	}
+
+	errWrite := writeFile(readyFile, picture)
+	if errWrite != nil {
+		logrus.Fatalf("error finding video: %s", err.Error())
+	}
+
+	return fileName, nil
 }
