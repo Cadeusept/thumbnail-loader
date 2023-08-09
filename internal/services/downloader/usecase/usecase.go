@@ -27,7 +27,6 @@ func (uc *downloadUseCase) DownloadThumbnail(url string) (string, error) {
 	var err error
 	t := entity.NewThumbnail()
 	t.Link = url
-	t.ThumbnailsDir = "../downloadedThumbnails"
 	t.VideoID, err = entity.FindVideoID(url)
 	t.IdHash = generateIdHash(t.VideoID)
 	if err != nil {

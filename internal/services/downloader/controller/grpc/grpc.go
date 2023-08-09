@@ -35,6 +35,12 @@ func (s DownloadServerGRPC) Start(url string) error {
 	return s.grpcServer.Serve(lis)
 }
 
+func (s DownloadServerGRPC) Shutdown(ctx context.Context) error {
+	<-ctx.Done()
+	s.grpcServer.GracefulStop()
+	return nil
+}
+
 func (s DownloadServerGRPC) DownloadThumbnail(ctx context.Context, req *downloader_proto.DownloadTRequest) (*downloader_proto.DownloadTResponse, error) {
 	// unpack request & download thumbnail
 	url := req.GetLink()

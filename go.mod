@@ -7,6 +7,8 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 )
 
+require github.com/inconshreveable/mousetrap v1.1.0 // indirect
+
 require (
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -14,6 +16,8 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/lichmaker/sqlite-mock v0.0.0-20221012022024-fa0658e5d315 // indirect
 	github.com/mattn/go-sqlite3 v1.14.15 // indirect
+	github.com/spf13/cobra v1.7.0
+	github.com/spf13/pflag v1.0.5
 	github.com/zhashkevych/go-sqlxmock v1.5.2-0.20201023121933-f973d0041cfc // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/net v0.14.0 // indirect

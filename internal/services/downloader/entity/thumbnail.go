@@ -26,7 +26,7 @@ func NewThumbnail() *Thumbnail {
 		IdHash:         "",
 		Link:           "",
 		FileName:       []string{},
-		ThumbnailsDir:  "./thumbnails",
+		ThumbnailsDir:  "./../downloadedThumbnails",
 		ThumbnailsName: "",
 	}
 }
@@ -99,26 +99,26 @@ func DownloadThumbnail(t *Thumbnail, url string) (string, error) {
 		return "", err
 	}
 
-	err = createFolder("../downloadedThumbnails")
+	err = createFolder(t.ThumbnailsDir)
 	if err != nil {
-		logrus.Fatalf("error finding video: %s", err.Error())
+		logrus.Fatalf("error creating folder: %s", err.Error())
 	}
 
 	// перебирает директорию thumbnails и сохраняет имена файлов
 	err = filepath.Walk(t.ThumbnailsDir, t.walkFunc)
 	if err != nil {
-		logrus.Fatalf("error finding video: %s", err.Error())
+		logrus.Fatalf("error walking: %s", err.Error())
 	}
 
 	fileName := t.setThumbnailName()
 	readyFile, errCreate := createFile(fileName)
 	if errCreate != nil {
-		logrus.Fatalf("error finding video: %s", err.Error())
+		logrus.Fatalf("error creating file: %s", errCreate.Error())
 	}
 
 	errWrite := writeFile(readyFile, picture)
 	if errWrite != nil {
-		logrus.Fatalf("error finding video: %s", err.Error())
+		logrus.Fatalf("error finding video: %s", errWrite.Error())
 	}
 
 	return fileName, nil
