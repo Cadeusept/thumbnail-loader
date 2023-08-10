@@ -5,61 +5,61 @@
 package mockrepo
 
 import (
-        reflect "reflect"
+	reflect "reflect"
 
-        models "github.com/cadeusept/thumbnail-loader/internal/models"
-        gomock "github.com/golang/mock/gomock"
+	models "github.com/cadeusept/thumbnail-loader/internal/models"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockDownloadRepoI is a mock of DownloadRepoI interface.
 type MockDownloadRepoI struct {
-        ctrl     *gomock.Controller
-        recorder *MockDownloadRepoIMockRecorder
+	ctrl     *gomock.Controller
+	recorder *MockDownloadRepoIMockRecorder
 }
 
 // MockDownloadRepoIMockRecorder is the mock recorder for MockDownloadRepoI.
 type MockDownloadRepoIMockRecorder struct {
-        mock *MockDownloadRepoI
+	mock *MockDownloadRepoI
 }
 
 // NewMockDownloadRepoI creates a new mock instance.
 func NewMockDownloadRepoI(ctrl *gomock.Controller) *MockDownloadRepoI {
-        mock := &MockDownloadRepoI{ctrl: ctrl}
-        mock.recorder = &MockDownloadRepoIMockRecorder{mock}
-        return mock
+	mock := &MockDownloadRepoI{ctrl: ctrl}
+	mock.recorder = &MockDownloadRepoIMockRecorder{mock}
+	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockDownloadRepoI) EXPECT() *MockDownloadRepoIMockRecorder {
-        return m.recorder
+	return m.recorder
 }
 
 // CacheThumbnail mocks base method.
 func (m *MockDownloadRepoI) CacheThumbnail(t models.Thumbnail) (int, error) {
-        m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "CacheThumbnail", t)
-        ret0, _ := ret[0].(int)
-        ret1, _ := ret[1].(error)
-        return ret0, ret1
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CacheThumbnail", t)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CacheThumbnail indicates an expected call of CacheThumbnail.
 func (mr *MockDownloadRepoIMockRecorder) CacheThumbnail(t interface{}) *gomock.Call {
-        mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CacheThumbnail", reflect.TypeOf((*MockDownloadRepoI)(nil).CacheThumbnail), t)
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CacheThumbnail", reflect.TypeOf((*MockDownloadRepoI)(nil).CacheThumbnail), t)
 }
 
 // GetThumbnail mocks base method.
 func (m *MockDownloadRepoI) GetThumbnail(urlHash string) (string, error) {
-        m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetThumbnail", urlHash)
-        ret0, _ := ret[0].(string)
-        ret1, _ := ret[1].(error)
-        return ret0, ret1
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetThumbnail", urlHash)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetThumbnail indicates an expected call of GetThumbnail.
 func (mr *MockDownloadRepoIMockRecorder) GetThumbnail(urlHash interface{}) *gomock.Call {
-        mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetThumbnail", reflect.TypeOf((*MockDownloadRepoI)(nil).GetThumbnail), urlHash)
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetThumbnail", reflect.TypeOf((*MockDownloadRepoI)(nil).GetThumbnail), urlHash)
 }

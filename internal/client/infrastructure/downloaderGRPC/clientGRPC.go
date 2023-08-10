@@ -10,16 +10,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// DownloadClientGRPC структура хранящая интерфейс DownloaderServiceClient
 type DownloadClientGRPC struct {
 	downloadClient downloaderProto.DownloaderServiceClient
 }
 
+// NewDownloadClientGRPC конструктор структуры DownloadClientGRPC
 func NewDownloadClientGRPC(c downloaderProto.DownloaderServiceClient) *DownloadClientGRPC {
 	return &DownloadClientGRPC{
 		downloadClient: c,
 	}
 }
 
+// DownloadThumbnail отправляет на сервер запрос с ссылкой и получает в ответ картинку,
+// а затем записывает её в файл
 func (c *DownloadClientGRPC) DownloadThumbnail(ctx context.Context, t *entity.Thumbnail, url string) error {
 	resp, err := c.downloadClient.DownloadThumbnail(context.Background(),
 		&downloaderProto.DownloadTRequest{
@@ -50,6 +54,7 @@ func (c *DownloadClientGRPC) DownloadThumbnail(ctx context.Context, t *entity.Th
 	return nil
 }
 
+// DownloadThumbnailSync обрабатывает массив ссылок и отправляет на сервер запросы с ними поочерёдно
 func (c *DownloadClientGRPC) DownloadThumbnailsSync(ctx context.Context, urls []string, wg *sync.WaitGroup) {
 	t := entity.NewThumbnail()
 	err := entity.CreateFolder(t.ThumbnailsDir)
@@ -66,13 +71,13 @@ func (c *DownloadClientGRPC) DownloadThumbnailsSync(ctx context.Context, urls []
 	wg.Done()
 }
 
+// DownloadThumbnailSync обрабатывает массив ссылок и отправляет на сервер запросы с ними асинхронно
 func (c *DownloadClientGRPC) DownloadThumbnailsAsync(ctx context.Context, urls []string, wg *sync.WaitGroup) {
 	t := entity.NewThumbnail()
 	err := entity.CreateFolder(t.ThumbnailsDir)
 	if err != nil {
 		logrus.Fatalf("error finding video: %s", err.Error())
 	}
-	// var wg sync.WaitGroup
 
 	for _, v := range urls {
 		wg.Add(1)

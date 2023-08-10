@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// создаёт папку, если она существует, не делает ничего
+// CreateFolder создаёт папку, если она существует, или не делает ничего
 func CreateFolder(thumbnailsDir string) error {
 	err := os.MkdirAll(thumbnailsDir, os.ModePerm)
 	if err != nil {
@@ -21,11 +21,11 @@ func CreateFolder(thumbnailsDir string) error {
 	return nil
 }
 
-// createFile создаёт и сохраняет jpg thumbnail
+// CreateFile создаёт и сохраняет jpg thumbnail
 // по умолчанию папка "downloadedThumbnails"
 func CreateFile(thumbnailsName string) (*os.File, error) {
 
-	// create file with auto set in the name's last number
+	// создаёт файл с автоматически выставленным именем
 	createdFile, err := os.Create(thumbnailsName)
 	if err != nil {
 		return nil, fmt.Errorf("can't create file: %w", err)
@@ -34,7 +34,7 @@ func CreateFile(thumbnailsName string) (*os.File, error) {
 	return createdFile, nil
 }
 
-// writeFile пишет картинку из строки в созданный файл
+// WriteFile пишет картинку из строки в созданный файл
 func WriteFile(readyFile *os.File, picture []byte) error {
 	defer readyFile.Close()
 
@@ -48,6 +48,7 @@ func WriteFile(readyFile *os.File, picture []byte) error {
 	return nil
 }
 
+// WalcFunc это фуннкция обхода директории
 func (t *Thumbnail) WalkFunc(path string, info os.FileInfo, err error) error {
 	if info.Name() != "thumbnails" {
 		t.FileName = append(t.FileName, info.Name())
@@ -56,8 +57,8 @@ func (t *Thumbnail) WalkFunc(path string, info os.FileInfo, err error) error {
 	return nil
 }
 
-// setNameDigit получает последнее имя файла в директории
-// затем ставит следкющее число в имени файла
+// SetNameDigit получает последнее имя файла в директории
+// затем ставит следующее число в имени файла
 func SetNameDigit(inputArr []string) string {
 	var err error
 	var digitsCounter int
@@ -113,6 +114,7 @@ func SetNameDigit(inputArr []string) string {
 	return "0"
 }
 
+// SetThumbnailName формирует и возвращает имя thumbnail'а
 func (t *Thumbnail) SetThumbnailName() string {
 	return t.ThumbnailsDir + "/thumbnail_" + SetNameDigit(t.FileName) + ".jpg"
 }

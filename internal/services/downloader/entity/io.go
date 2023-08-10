@@ -28,15 +28,14 @@ func createFile(thumbnailsName string) (*os.File, error) {
 	// создаёт файл с автоматически выставленным номером в имени
 	createdFile, err := os.Create(thumbnailsName)
 	if err != nil {
-		// logrus.Errorf("%v", err)
 		return nil, fmt.Errorf("can't create file: %v", err)
 	}
 
 	return createdFile, nil
 }
 
-// writeFile write response body from valid url
-// at the created jpg thumbnail file.
+// writeFile пишет тело запроса
+// в созданный файл
 func writeFile(readyFile *os.File, resp *http.Response) error {
 	defer resp.Body.Close()
 	defer readyFile.Close()
