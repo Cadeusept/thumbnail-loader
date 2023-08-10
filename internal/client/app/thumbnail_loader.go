@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	clientGRPC "github.com/cadeusept/thumbnail-loader/internal/client/infrastructure/downloaderGRPC"
+	"github.com/cadeusept/thumbnail-loader/internal/client/utils"
 	downloaderProto "github.com/cadeusept/thumbnail-loader/internal/services/downloader/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -43,11 +44,11 @@ var rootCmd = cobra.Command{
 		if asyncFlag {
 			// Send async
 			wg.Add(1)
-			go clientGRPC.DownloadThumbnailsAsync(context.Background(), args, &wg)
+			go clientGRPC.DownloadThumbnailsAsync(context.Background(), utils.RemoveDuplicateStr(args), &wg)
 		} else {
 			// Send sync
 			wg.Add(1)
-			go clientGRPC.DownloadThumbnailsSync(context.Background(), args, &wg)
+			go clientGRPC.DownloadThumbnailsSync(context.Background(), utils.RemoveDuplicateStr(args), &wg)
 		}
 		wg.Wait()
 	},

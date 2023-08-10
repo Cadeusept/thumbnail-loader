@@ -17,11 +17,11 @@ func TestCreateFile(t *testing.T) {
 	_ = createFolder(TestDir)
 	thumbnailsName := TestDir[2:] + "/thumbnail_" + setNameDigit(tmb.FileName) + ".jpg"
 
-	file, err := createFile(thumbnailsName)
+	mf, err := NewMuxFile(thumbnailsName)
 	if err != nil {
 		t.Error("Wrong created file!")
 	}
-	file.Close()
+	mf.file.Close()
 	os.Remove("./" + thumbnailsName)
 }
 
@@ -56,25 +56,24 @@ func TestCreateFileWrong(t *testing.T) {
 		thumbnailsName = "/"
 	}
 
-	file, err := createFile(thumbnailsName)
-	file.Close()
+	mf, err := NewMuxFile(thumbnailsName)
 	defer os.Remove("./" + thumbnailsName)
 
 	if err == nil {
-		t.Error("incorrect file name. Must be nil return!")
+		mf.file.Close()
+		t.Error("incorrect file name. Must be error return!")
 	}
 }
 
 func TestWriteFile(t *testing.T) {
 
-	file, _ := os.Create(TestDir + "/thumbnail_test2.jpg")
-	defer file.Close()
+	mf, _ := NewMuxFile(TestDir + "/thumbnail_test2.jpg")
+	defer mf.file.Close()
 	defer os.Remove(TestDir + "/thumbnail_test2.jpg")
 
 	resp, err := http.Get("https://www.youtube.com/watch?v=N2wJQSBx5i4")
 
-	if writeFile(file, resp) != nil {
-
+	if writeFile(mf, resp) != nil {
 		t.Errorf("Write file failed %v\n", err)
 	}
 	resp.Body.Close()
