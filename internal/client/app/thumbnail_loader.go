@@ -14,7 +14,7 @@ import (
 
 var asyncFlag bool
 var rootCmd = cobra.Command{
-	Use:     "thumbnail-loader",
+	Use:     "thumbnail_loader",
 	Version: "v1.0.0",
 	Short:   "It's simple thumbnail loader",
 	Long:    "You can load thumbnails one by one or altogether asynchroniously",
@@ -63,7 +63,7 @@ var rootCmd = cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().BoolVarP(&asyncFlag, "async", "a", false, "Downloads thumbnails async")
+	rootCmd.Flags().BoolVarP(&asyncFlag, "async", "a", false, "Downloads thumbnails asynchroniously")
 }
 
 func main() {

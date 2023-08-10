@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ../internal/services/downloader/app/
+go run ./serverDownloader.go
+cd ../../../../cmd
