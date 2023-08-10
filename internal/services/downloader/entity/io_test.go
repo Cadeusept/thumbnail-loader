@@ -57,11 +57,11 @@ func TestCreateFileWrong(t *testing.T) {
 	}
 
 	mf, err := NewMuxFile(thumbnailsName)
-	mf.file.Close()
 	defer os.Remove("./" + thumbnailsName)
 
 	if err == nil {
-		t.Error("incorrect file name. Must be nil return!")
+		mf.file.Close()
+		t.Error("incorrect file name. Must be error return!")
 	}
 }
 

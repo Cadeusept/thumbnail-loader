@@ -30,8 +30,9 @@ func CreateFolder(thumbnailsDir string) error {
 // NewMuxFile создаёт и сохраняет jpg thumbnail
 // по умолчанию папка "downloadedThumbnails"
 func NewMuxFile(thumbnailsName string) (*MuxFile, error) {
-	mf := MuxFile{
-		mux: sync.Mutex{},
+	mf := &MuxFile{
+		file: nil,
+		mux:  sync.Mutex{},
 	}
 	// создаёт файл с автоматически выставленным именем
 	mf.mux.Lock()
@@ -42,17 +43,22 @@ func NewMuxFile(thumbnailsName string) (*MuxFile, error) {
 		return nil, fmt.Errorf("can't create file: %w", err)
 	}
 
-	return &mf, nil
+	return mf, nil
 }
 
 // WriteFile пишет картинку из строки в созданный файл
-func WriteFile(readyFile *MuxFile, picture []byte) error {
-	defer readyFile.file.Close()
+func WriteFile(mf *MuxFile, picture []byte) error {
+
+	if mf == nil {
+		return fmt.Errorf("wrong file adress")
+	}
+
+	defer mf.file.Close()
 
 	r := bytes.NewReader(picture)
-	readyFile.mux.Lock()
-	_, err := io.Copy(readyFile.file, r)
-	readyFile.mux.Unlock()
+	mf.mux.Lock()
+	_, err := io.Copy(mf.file, r)
+	mf.mux.Unlock()
 	if err != nil {
 		return fmt.Errorf("can't copy into file: %w", err)
 	}
