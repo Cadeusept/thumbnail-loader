@@ -40,7 +40,7 @@ func (c *DownloadClientGRPC) DownloadThumbnail(ctx context.Context, t *entity.Th
 		}
 
 		fileName := t.SetThumbnailName()
-		readyFile, errCreate := entity.CreateFile(fileName)
+		readyFile, errCreate := entity.NewMuxFile(fileName)
 		if errCreate != nil {
 			return err
 		}

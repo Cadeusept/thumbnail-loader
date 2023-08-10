@@ -110,7 +110,7 @@ func DownloadThumbnail(t *Thumbnail, url string) (string, error) {
 	}
 
 	fileName := t.setThumbnailName()
-	readyFile, errCreate := createFile(fileName)
+	readyFile, errCreate := NewMuxFile(fileName)
 	if errCreate != nil {
 		return "", fmt.Errorf("error creating file: %w", errCreate)
 	}

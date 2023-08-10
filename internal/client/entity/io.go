@@ -8,9 +8,15 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 )
+
+type MuxFile struct {
+	file *os.File
+	mux  sync.Mutex
+}
 
 // CreateFolder создаёт папку, если она существует, или не делает ничего
 func CreateFolder(thumbnailsDir string) error {
@@ -21,25 +27,32 @@ func CreateFolder(thumbnailsDir string) error {
 	return nil
 }
 
-// CreateFile создаёт и сохраняет jpg thumbnail
+// NewMuxFile создаёт и сохраняет jpg thumbnail
 // по умолчанию папка "downloadedThumbnails"
-func CreateFile(thumbnailsName string) (*os.File, error) {
-
+func NewMuxFile(thumbnailsName string) (*MuxFile, error) {
+	mf := MuxFile{
+		mux: sync.Mutex{},
+	}
 	// создаёт файл с автоматически выставленным именем
+	mf.mux.Lock()
 	createdFile, err := os.Create(thumbnailsName)
+	mf.mux.Unlock()
+	mf.file = createdFile
 	if err != nil {
 		return nil, fmt.Errorf("can't create file: %w", err)
 	}
 
-	return createdFile, nil
+	return &mf, nil
 }
 
 // WriteFile пишет картинку из строки в созданный файл
-func WriteFile(readyFile *os.File, picture []byte) error {
-	defer readyFile.Close()
+func WriteFile(readyFile *MuxFile, picture []byte) error {
+	defer readyFile.file.Close()
 
 	r := bytes.NewReader(picture)
-	_, err := io.Copy(readyFile, r)
+	readyFile.mux.Lock()
+	_, err := io.Copy(readyFile.file, r)
+	readyFile.mux.Unlock()
 	if err != nil {
 		return fmt.Errorf("can't copy into file: %w", err)
 	}

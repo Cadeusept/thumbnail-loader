@@ -8,9 +8,15 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 )
+
+type MuxFile struct {
+	file *os.File
+	mux  sync.Mutex
+}
 
 // создаёт папку, если она существует, не делает ничего
 func createFolder(thumbnailsDir string) error {
@@ -21,28 +27,33 @@ func createFolder(thumbnailsDir string) error {
 	return nil
 }
 
-// createFile создаёт и сохраняет jpg thumbnail
+// NewMuxFile создаёт и сохраняет jpg thumbnail
 // по умолчанию папка "downloadedThumbnails"
-func createFile(thumbnailsName string) (*os.File, error) {
-
+func NewMuxFile(thumbnailsName string) (*MuxFile, error) {
+	mf := MuxFile{
+		mux: sync.Mutex{},
+	}
 	// создаёт файл с автоматически выставленным номером в имени
+	mf.mux.Lock()
 	createdFile, err := os.Create(thumbnailsName)
+	mf.mux.Unlock()
+	mf.file = createdFile
 	if err != nil {
 		return nil, fmt.Errorf("can't create file: %v", err)
 	}
-
-	return createdFile, nil
+	return &mf, nil
 }
 
 // writeFile пишет тело запроса
 // в созданный файл
-func writeFile(readyFile *os.File, resp *http.Response) error {
+func writeFile(mf *MuxFile, resp *http.Response) error {
 	defer resp.Body.Close()
-	defer readyFile.Close()
+	defer mf.file.Close()
 
-	_, err := io.Copy(readyFile, resp.Body)
+	mf.mux.Lock()
+	_, err := io.Copy(mf.file, resp.Body)
+	mf.mux.Unlock()
 	if err != nil {
-		// log.Println(err)
 		return fmt.Errorf("failed to read file: %w", err)
 	}
 	logrus.Print("file written")

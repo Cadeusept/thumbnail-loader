@@ -16,11 +16,11 @@ func TestCreateFile(t *testing.T) {
 	_ = CreateFolder(TestDir)
 	thumbnailsName := TestDir[2:] + "/thumbnail_" + SetNameDigit(tmb.FileName) + ".jpg"
 
-	file, err := CreateFile(thumbnailsName)
+	mf, err := NewMuxFile(thumbnailsName)
 	if err != nil {
 		t.Error("Wrong created file!")
 	}
-	file.Close()
+	mf.file.Close()
 	os.Remove("./" + thumbnailsName)
 }
 
@@ -55,8 +55,8 @@ func TestCreateFileWrong(t *testing.T) {
 		thumbnailsName = "/"
 	}
 
-	file, err := CreateFile(thumbnailsName)
-	file.Close()
+	mf, err := NewMuxFile(thumbnailsName)
+	mf.file.Close()
 	defer os.Remove("./" + thumbnailsName)
 
 	if err == nil {
@@ -66,13 +66,13 @@ func TestCreateFileWrong(t *testing.T) {
 
 func TestWriteFile(t *testing.T) {
 
-	file, _ := os.Create(TestDir + "/thumbnail_test2.jpg")
-	defer file.Close()
+	mf, _ := NewMuxFile(TestDir + "/thumbnail_test2.jpg")
+	defer mf.file.Close()
 	defer os.Remove(TestDir + "/thumbnail_test2.jpg")
 
 	str := []byte{1, 0, 1, 1, 0}
 
-	if err := WriteFile(file, str); err != nil {
+	if err := WriteFile(mf, str); err != nil {
 		t.Errorf("Write file failed %v\n", err)
 	}
 	removeTestDir(TestDir)
