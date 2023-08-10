@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - adding_actions
   pull_request:
 
 jobs:
