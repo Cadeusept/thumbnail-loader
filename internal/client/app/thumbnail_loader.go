@@ -37,7 +37,6 @@ var rootCmd = cobra.Command{
 
 		log.Infof("gRPC server successfully connected")
 
-		// c := downloader_proto.NewDownloaderServiceClient(conn)
 		clientGRPC := clientGRPC.NewDownloadClientGRPC(downloaderProto.NewDownloaderServiceClient(conn))
 
 		var wg sync.WaitGroup
@@ -51,14 +50,6 @@ var rootCmd = cobra.Command{
 			go clientGRPC.DownloadThumbnailsSync(context.Background(), args, &wg)
 		}
 		wg.Wait()
-
-		// graceful shutdown
-		/*
-			c_quit := make(chan os.Signal, 1)
-			signal.Notify(c_quit, syscall.SIGTERM, syscall.SIGINT)
-			sig := <-c_quit
-
-			log.Printf("catched signal: %s. App shutting down...", sig.String())*/
 	},
 }
 

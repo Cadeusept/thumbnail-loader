@@ -72,7 +72,6 @@ func (c *DownloadClientGRPC) DownloadThumbnailsAsync(ctx context.Context, urls [
 	if err != nil {
 		logrus.Fatalf("error finding video: %s", err.Error())
 	}
-	// var wg sync.WaitGroup
 
 	for _, v := range urls {
 		wg.Add(1)
