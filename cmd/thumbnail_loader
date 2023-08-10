@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ../internal/client/app
+go run ./thumbnail_loader.go ${@:1}
+cd ../../../cmd
