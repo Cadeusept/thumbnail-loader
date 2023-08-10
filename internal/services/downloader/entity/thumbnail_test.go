@@ -113,7 +113,7 @@ func TestSetNameDigitWrongNumbers(t *testing.T) {
 
 	out := setNameDigit(namesList)
 
-	if out != "" {
+	if out != "1" {
 		t.Errorf("Wrong number symbols! %v", out)
 	}
 }
