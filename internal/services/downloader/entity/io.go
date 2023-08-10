@@ -3,7 +3,6 @@ package entity
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"sort"
@@ -26,10 +25,10 @@ func createFolder(thumbnailsDir string) error {
 // по умолчанию папка "downloadedThumbnails"
 func createFile(thumbnailsName string) (*os.File, error) {
 
-	// create file with auto set in the name's last number
+	// создаёт файл с автоматически выставленным номером в имени
 	createdFile, err := os.Create(thumbnailsName)
 	if err != nil {
-		logrus.Errorf("%v", err)
+		// logrus.Errorf("%v", err)
 		return nil, fmt.Errorf("can't create file: %v", err)
 	}
 
@@ -39,14 +38,14 @@ func createFile(thumbnailsName string) (*os.File, error) {
 // writeFile write response body from valid url
 // at the created jpg thumbnail file.
 func writeFile(readyFile *os.File, resp *http.Response) error {
+	defer resp.Body.Close()
+	defer readyFile.Close()
 
 	_, err := io.Copy(readyFile, resp.Body)
 	if err != nil {
-		log.Println(err)
-		return err
+		// log.Println(err)
+		return fmt.Errorf("failed to read file: %w", err)
 	}
-	resp.Body.Close()
-	readyFile.Close()
 	logrus.Print("file written")
 	return nil
 }
@@ -62,6 +61,8 @@ func (t *Thumbnail) walkFunc(path string, info os.FileInfo, err error) error {
 // setNameDigit получает последнее имя файла в директории
 // затем ставит следкющее число в имени файла
 func setNameDigit(inputArr []string) string {
+	var err error
+	var digitsCounter int
 
 	if len(inputArr) > 0 {
 
@@ -98,10 +99,14 @@ func setNameDigit(inputArr []string) string {
 			}
 		}
 
-		digitsCounter, err := strconv.Atoi(numbers)
-		if err != nil {
-			logrus.Errorln("String to Int Atoi conversion error!", err)
-			return ""
+		if numbers == "" {
+			digitsCounter = 0
+		} else {
+			digitsCounter, err = strconv.Atoi(numbers)
+			if err != nil {
+				logrus.Errorln("String to Int Atoi conversion error!", err)
+				return ""
+			}
 		}
 
 		digitsCounter++

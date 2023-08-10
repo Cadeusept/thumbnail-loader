@@ -70,7 +70,7 @@ func TestWriteFile(t *testing.T) {
 	defer file.Close()
 	defer os.Remove(TestDir + "/thumbnail_test2.jpg")
 
-	str := "test"
+	str := []byte{1, 0, 1, 1, 0}
 
 	if err := WriteFile(file, str); err != nil {
 		t.Errorf("Write file failed %v\n", err)

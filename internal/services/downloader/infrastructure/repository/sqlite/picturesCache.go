@@ -37,7 +37,7 @@ func (r *ThumbnailCacheSqlite) Create(t models.Thumbnail) (int, error) {
 func (r *ThumbnailCacheSqlite) GetPicture(urlHash string) (string, error) {
 	var picturePath string
 	query := fmt.Sprintf("SELECT picture FROM %s WHERE url_hash=$1", thumbnailsCacheTable)
-	err := r.db.Get(picturePath, query, urlHash)
+	err := r.db.Get(&picturePath, query, urlHash)
 
 	return picturePath, err
 }

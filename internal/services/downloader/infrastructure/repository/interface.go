@@ -1,4 +1,4 @@
-package downloader_repository
+package downloaderRepository
 
 import "github.com/cadeusept/thumbnail-loader/internal/models"
 

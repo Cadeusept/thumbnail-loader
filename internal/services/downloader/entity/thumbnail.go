@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -78,14 +79,13 @@ func getURLResponse(videoId string) (*http.Response, error) {
 	resp, err := http.Get(vi + videoId + resMax)
 
 	if err != nil || resp.StatusCode != 200 {
-		logrus.Printf("unable to get max resolution: code %v\n", resp.StatusCode)
+		logrus.Errorf("unable to get max resolution: code %v\n", resp.StatusCode)
 
 		// пробуем получить картинку с меньшим разрешением
 		resp, err = http.Get(vi + videoId + resHQ)
 
 		if err != nil || resp.StatusCode != 200 {
-			logrus.Fatalf("error getting picture: %v\n", err)
-			return nil, err
+			return nil, fmt.Errorf("can't copy into file: %w", err)
 		}
 	}
 
@@ -95,30 +95,29 @@ func getURLResponse(videoId string) (*http.Response, error) {
 func DownloadThumbnail(t *Thumbnail, url string) (string, error) {
 	picture, err := getURLResponse(t.VideoID)
 	if err != nil {
-		logrus.Fatalf("error finding video: %s", err.Error())
-		return "", err
+		return "", fmt.Errorf("error finding video: %w", err)
 	}
 
 	err = createFolder(t.ThumbnailsDir)
 	if err != nil {
-		logrus.Fatalf("error creating folder: %s", err.Error())
+		return "", fmt.Errorf("error creating folder: %w", err)
 	}
 
 	// перебирает директорию thumbnails и сохраняет имена файлов
 	err = filepath.Walk(t.ThumbnailsDir, t.walkFunc)
 	if err != nil {
-		logrus.Fatalf("error walking: %s", err.Error())
+		return "", fmt.Errorf("error walking: %w", err)
 	}
 
 	fileName := t.setThumbnailName()
 	readyFile, errCreate := createFile(fileName)
 	if errCreate != nil {
-		logrus.Fatalf("error creating file: %s", errCreate.Error())
+		return "", fmt.Errorf("error creating file: %w", errCreate)
 	}
 
 	errWrite := writeFile(readyFile, picture)
 	if errWrite != nil {
-		logrus.Fatalf("error finding video: %s", errWrite.Error())
+		return "", fmt.Errorf("error writing file: %w", errWrite)
 	}
 
 	return fileName, nil

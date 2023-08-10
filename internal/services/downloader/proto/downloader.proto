@@ -1,7 +1,7 @@
 syntax="proto3";
 
-package downloader_proto;
-option go_package = "./downloader_proto";
+package downloaderProto;
+option go_package = "./downloaderProto";
 
 service DownloaderService {
     rpc DownloadThumbnail(DownloadTRequest) returns (DownloadTResponse) {}
@@ -12,5 +12,5 @@ message DownloadTRequest {
 }
 
 message DownloadTResponse {
-    string Picture = 1;
+    bytes Picture = 1;
 }

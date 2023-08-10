@@ -2,16 +2,17 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"net"
 
 	"github.com/cadeusept/thumbnail-loader/internal/services/downloader"
-	downloader_proto "github.com/cadeusept/thumbnail-loader/internal/services/downloader/proto"
-	"github.com/sirupsen/logrus"
+	downloaderProto "github.com/cadeusept/thumbnail-loader/internal/services/downloader/proto"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 type DownloadServerGRPC struct {
-	downloader_proto.UnimplementedDownloaderServiceServer
+	downloaderProto.UnimplementedDownloaderServiceServer
 
 	grpcServer *grpc.Server
 	downloadUC downloader.DownloadUseCaseI
@@ -30,7 +31,9 @@ func (s DownloadServerGRPC) Start(url string) error {
 		return err
 	}
 
-	downloader_proto.RegisterDownloaderServiceServer(s.grpcServer, s)
+	downloaderProto.RegisterDownloaderServiceServer(s.grpcServer, s)
+
+	log.Info("server successfully started")
 
 	return s.grpcServer.Serve(lis)
 }
@@ -41,17 +44,15 @@ func (s DownloadServerGRPC) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-func (s DownloadServerGRPC) DownloadThumbnail(ctx context.Context, req *downloader_proto.DownloadTRequest) (*downloader_proto.DownloadTResponse, error) {
-	// unpack request & download thumbnail
+func (s DownloadServerGRPC) DownloadThumbnail(ctx context.Context, req *downloaderProto.DownloadTRequest) (*downloaderProto.DownloadTResponse, error) {
 	url := req.GetLink()
 
 	picture, err := s.downloadUC.DownloadThumbnail(url)
 	if err != nil {
-		logrus.Fatalf("error downloading thumbnail: %s", err)
-		return nil, err
+		return nil, fmt.Errorf("error downloading thumbnail: %w", err)
 	}
 
-	return &downloader_proto.DownloadTResponse{
+	return &downloaderProto.DownloadTResponse{
 		Picture: picture,
 	}, nil
 }

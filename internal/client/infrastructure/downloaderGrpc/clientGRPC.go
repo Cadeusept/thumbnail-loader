@@ -6,15 +6,15 @@ import (
 	"sync"
 
 	entity "github.com/cadeusept/thumbnail-loader/internal/client/entity"
-	downloader_proto "github.com/cadeusept/thumbnail-loader/internal/services/downloader/proto"
+	downloaderProto "github.com/cadeusept/thumbnail-loader/internal/services/downloader/proto"
 	"github.com/sirupsen/logrus"
 )
 
 type DownloadClientGRPC struct {
-	downloadClient downloader_proto.DownloaderServiceClient
+	downloadClient downloaderProto.DownloaderServiceClient
 }
 
-func NewDownloadClientGRPC(c downloader_proto.DownloaderServiceClient) *DownloadClientGRPC {
+func NewDownloadClientGRPC(c downloaderProto.DownloaderServiceClient) *DownloadClientGRPC {
 	return &DownloadClientGRPC{
 		downloadClient: c,
 	}
@@ -22,7 +22,7 @@ func NewDownloadClientGRPC(c downloader_proto.DownloaderServiceClient) *Download
 
 func (c *DownloadClientGRPC) DownloadThumbnail(ctx context.Context, t *entity.Thumbnail, url string) error {
 	resp, err := c.downloadClient.DownloadThumbnail(context.Background(),
-		&downloader_proto.DownloadTRequest{
+		&downloaderProto.DownloadTRequest{
 			Link: url,
 		})
 	if err != nil {
@@ -50,7 +50,7 @@ func (c *DownloadClientGRPC) DownloadThumbnail(ctx context.Context, t *entity.Th
 	return nil
 }
 
-func (c *DownloadClientGRPC) DownloadThumbnailsSync(ctx context.Context, urls []string) {
+func (c *DownloadClientGRPC) DownloadThumbnailsSync(ctx context.Context, urls []string, wg *sync.WaitGroup) {
 	t := entity.NewThumbnail()
 	err := entity.CreateFolder(t.ThumbnailsDir)
 	if err != nil {
@@ -63,15 +63,16 @@ func (c *DownloadClientGRPC) DownloadThumbnailsSync(ctx context.Context, urls []
 			logrus.Errorf("error downloading thumbnail %s: %v", v, err)
 		}
 	}
+	wg.Done()
 }
 
-func (c *DownloadClientGRPC) DownloadThumbnailsAsync(ctx context.Context, urls []string) {
+func (c *DownloadClientGRPC) DownloadThumbnailsAsync(ctx context.Context, urls []string, wg *sync.WaitGroup) {
 	t := entity.NewThumbnail()
 	err := entity.CreateFolder(t.ThumbnailsDir)
 	if err != nil {
 		logrus.Fatalf("error finding video: %s", err.Error())
 	}
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 
 	for _, v := range urls {
 		wg.Add(1)
@@ -83,6 +84,5 @@ func (c *DownloadClientGRPC) DownloadThumbnailsAsync(ctx context.Context, urls [
 			wg.Done()
 		}(v)
 	}
-	wg.Wait()
-
+	wg.Done()
 }

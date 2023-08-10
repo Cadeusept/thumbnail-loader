@@ -1,18 +1,23 @@
 package sqlite
 
-import "github.com/jmoiron/sqlx"
+import (
+	"fmt"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
+)
 
 const thumbnailsCacheTable = "thumbnails_cache"
 
 type Config struct {
-	DBName string
+	DBPath string
 }
 
 func NewSqliteDB(cfg Config) (*sqlx.DB, error) {
-	db, err := sqlx.Connect("sqlite3", cfg.DBName)
+	db, err := sqlx.Connect("sqlite3", cfg.DBPath)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error conneccting to database: %w", err)
 	}
 
 	return db, nil
